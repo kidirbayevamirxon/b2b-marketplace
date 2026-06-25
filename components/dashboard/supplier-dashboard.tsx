@@ -46,11 +46,11 @@ import { PageHeader } from './page-header'
 import { StatusBadge } from './status-badge'
 import { formatCurrency, formatNumber } from '@/lib/format'
 import {
-  supplierCategoryMix,
-  supplierInventory,
-  supplierRecentOrders,
-  supplierSales,
-  supplierTopCustomers,
+  firmaCategoryMix,
+  firmaInventory,
+  firmaRecentOrders,
+  firmaSales,
+  firmaTopCustomers,
 } from '@/lib/dashboard-data'
 
 const salesConfig = {
@@ -73,7 +73,7 @@ const performance = [
 ]
 
 export function SupplierDashboard() {
-  const totalProducts = supplierCategoryMix.reduce((a, b) => a + b.value, 0)
+  const totalProducts = firmaCategoryMix.reduce((a, b) => a + b.value, 0)
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
@@ -96,7 +96,7 @@ export function SupplierDashboard() {
           </CardHeader>
           <CardContent>
             <ChartContainer config={salesConfig} className="h-[280px] w-full">
-              <AreaChart data={supplierSales} margin={{ left: 4, right: 8, top: 8 }}>
+              <AreaChart data={firmaSales} margin={{ left: 4, right: 8, top: 8 }}>
                 <defs>
                   <linearGradient id="fillRevenue" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="var(--color-revenue)" stopOpacity={0.4} />
@@ -134,8 +134,8 @@ export function SupplierDashboard() {
             <ChartContainer config={mixConfig} className="mx-auto aspect-square h-[200px]">
               <PieChart>
                 <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-                <Pie data={supplierCategoryMix} dataKey="value" nameKey="category" innerRadius={58} strokeWidth={4} stroke="var(--card)">
-                  {supplierCategoryMix.map((entry) => (
+                <Pie data={firmaCategoryMix} dataKey="value" nameKey="category" innerRadius={58} strokeWidth={4} stroke="var(--card)">
+                  {firmaCategoryMix.map((entry) => (
                     <Cell key={entry.category} fill={entry.fill} />
                   ))}
                   <Label
@@ -158,7 +158,7 @@ export function SupplierDashboard() {
               </PieChart>
             </ChartContainer>
             <div className="mt-2 flex flex-col gap-2">
-              {supplierCategoryMix.map((c) => (
+              {firmaCategoryMix.map((c) => (
                 <div key={c.category} className="flex items-center justify-between text-sm">
                   <span className="flex items-center gap-2 text-muted-foreground">
                     <span className="size-2.5 rounded-full" style={{ background: c.fill }} />
@@ -194,7 +194,7 @@ export function SupplierDashboard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {supplierRecentOrders.map((o) => (
+                {firmaRecentOrders.map((o) => (
                   <TableRow key={o.id}>
                     <TableCell className="font-medium">{o.id}</TableCell>
                     <TableCell className="text-muted-foreground">{o.customer}</TableCell>
@@ -243,7 +243,7 @@ export function SupplierDashboard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {supplierInventory.map((i) => (
+                {firmaInventory.map((i) => (
                   <TableRow key={i.sku}>
                     <TableCell className="font-mono text-xs text-muted-foreground">{i.sku}</TableCell>
                     <TableCell className="font-medium">{i.name}</TableCell>
@@ -262,7 +262,7 @@ export function SupplierDashboard() {
             <CardDescription>By spend this year</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
-            {supplierTopCustomers.map((c) => (
+            {firmaTopCustomers.map((c) => (
               <div key={c.name} className="flex items-center gap-3">
                 <Avatar className="size-9">
                   <AvatarFallback className="bg-secondary text-xs font-medium">

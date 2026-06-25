@@ -16,14 +16,16 @@ import {
   Users,
   Wallet,
   type LucideIcon,
+  User,
 } from 'lucide-react'
 import type { Role } from '@/lib/dashboard-data'
 
 export interface NavItem {
-  label: string
-  icon: LucideIcon
-  badge?: string
-  active?: boolean
+  label: string;
+  icon: LucideIcon;
+  href: string;
+  badge?: string;
+  active?: boolean;
 }
 
 export interface NavGroup {
@@ -32,68 +34,99 @@ export interface NavGroup {
 }
 
 export const navByRole: Record<Role, NavGroup[]> = {
-  supplier: [
+  firma: [
     {
       title: 'Workspace',
       items: [
-        { label: 'Dashboard', icon: LayoutDashboard, active: true },
-        { label: 'Orders', icon: ShoppingCart, badge: '14' },
-        { label: 'Products', icon: Package },
-        { label: 'Inventory', icon: Boxes },
+        { label: 'Dashboard', icon: LayoutDashboard, href: "/dashboard", active: true },
+        { label: 'Orders', icon: ShoppingCart, href: "/dashboard/orders", badge: '14' },
+        { label: 'Products', icon: Package, href: "/dashboard/products" },
+        { label: 'Inventory', icon: Boxes, href: "/dashboard/inventory" },
       ],
     },
     {
       title: 'Insights',
       items: [
-        { label: 'Analytics', icon: BarChart3 },
-        { label: 'Customers', icon: Users },
-        { label: 'Payouts', icon: Wallet },
+        { label: 'Analytics', icon: BarChart3, href: "/analytics" },
+        // { label: 'Customers', icon: Users, href: "/customers" },
+        // { label: 'Payouts', icon: Wallet, href: "/payouts" },
       ],
     },
   ],
-  store: [
-    {
-      title: 'Workspace',
-      items: [
-        { label: 'Dashboard', icon: LayoutDashboard, active: true },
-        { label: 'Purchases', icon: ShoppingCart, badge: '5' },
-        { label: 'Suppliers', icon: Factory },
-        { label: 'Favorites', icon: Heart },
-      ],
-    },
-    {
-      title: 'Insights',
-      items: [
-        { label: 'Spending', icon: BarChart3 },
-        { label: 'Deliveries', icon: Truck },
-        { label: 'Billing', icon: CreditCard },
-      ],
-    },
-  ],
+  market: [
+  {
+    title: "Workspace",
+    items: [
+      {
+        label: "Dashboard",
+        icon: LayoutDashboard,
+        href: "/dashboard",
+        active: true,
+      },
+      {
+        label: "Purchases",
+        icon: ShoppingCart,
+        href: "/dashboard/purchases",
+        badge: "5",
+      },
+      {
+        label: "Suppliers",
+        icon: Factory,
+        href: "/dashboard/suppliers",
+      },
+      // {
+      //   label: "Favorites",
+      //   icon: Heart,
+      //   href: "/dashboard/favorites",
+      // },
+    ],
+  },
+],
   admin: [
-    {
-      title: 'Platform',
-      items: [
-        { label: 'Overview', icon: LayoutDashboard, active: true },
-        { label: 'Suppliers', icon: Factory },
-        { label: 'Stores', icon: Store },
-        { label: 'Products', icon: Package },
-        { label: 'Orders', icon: ShoppingCart, badge: '212' },
-      ],
-    },
-    {
-      title: 'Operations',
-      items: [
-        { label: 'Logistics', icon: Truck },
-        { label: 'Revenue', icon: Wallet },
-        { label: 'Compliance', icon: ShieldCheck },
-        { label: 'Organizations', icon: Building2 },
-      ],
-    },
-  ],
+  {
+    title: "Platform",
+    items: [
+      {
+        label: "Overview",
+        icon: LayoutDashboard,
+        href: "/dashboard",
+        active: true,
+      },
+      {
+        label: "Suppliers",
+        icon: Factory,
+        href: "/dashboard/suppliers",
+      },
+      {
+        label: "Stores",
+        icon: Store,
+        href: "/dashboard/stores",
+      },
+      {
+        label: "Products",
+        icon: Package,
+        href: "/dashboard/products",
+      },
+      // {
+      //   label: "Orders",
+      //   icon: ShoppingCart,
+      //   href: "/dashboard/orders",
+      //   badge: "212",
+      // },
+    ],
+  },
+],
 }
 
 export const bottomNav: NavItem[] = [
-  { label: 'Settings', icon: Settings },
-  { label: 'Support', icon: LifeBuoy },
-]
+  {
+    label: "Profile",
+    icon: User,
+    href: "/profile",
+  },
+  {
+    label: "Support",
+    icon: LifeBuoy,
+    href: "/support",
+  },
+];

@@ -5,7 +5,7 @@ import { bottomNav, navByRole } from './nav-config'
 import { roleMeta, type Role } from '@/lib/dashboard-data'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-
+import Link from "next/link";
 export function SidebarNav({
   role,
   onNavigate,
@@ -37,9 +37,10 @@ export function SidebarNav({
               {group.title}
             </p>
             {group.items.map((item) => (
-              <button
-                key={item.label}
-                onClick={onNavigate}
+              <Link
+  key={item.label}
+  href={item.href}
+  onClick={onNavigate}
                 className={cn(
                   'group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                   item.active
@@ -61,7 +62,7 @@ export function SidebarNav({
                     {item.badge}
                   </span>
                 ) : null}
-              </button>
+              </Link>
             ))}
           </div>
         ))}
@@ -69,29 +70,16 @@ export function SidebarNav({
 
       <div className="flex flex-col gap-1">
         {bottomNav.map((item) => (
-          <button
+          <Link
             key={item.label}
+            href={item.href}
             onClick={onNavigate}
             className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-foreground"
           >
             <item.icon className="size-4.5 shrink-0" />
             {item.label}
-          </button>
+          </Link>
         ))}
-      </div>
-
-      <div className="rounded-xl border border-primary/20 bg-primary/8 p-3.5">
-        <div className="flex items-center gap-2">
-          <Sparkles className="size-4 text-primary" />
-          <p className="text-sm font-medium">Upgrade to Enterprise</p>
-        </div>
-        <p className="mt-1 text-xs text-muted-foreground">
-          Unlock advanced analytics, SLAs, and priority logistics for{' '}
-          {meta.org}.
-        </p>
-        <Button size="sm" className="mt-3 w-full">
-          View plans
-        </Button>
       </div>
     </div>
   )

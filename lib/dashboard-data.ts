@@ -1,18 +1,18 @@
-export type Role = 'supplier' | 'store' | 'admin'
+export type Role = 'firma' | 'market' | 'admin'
 
 export const roleMeta: Record<
   Role,
   { label: string; tagline: string; person: string; org: string; initials: string }
 > = {
-  supplier: {
-    label: 'Supplier',
+  firma: {
+    label: 'Firma',
     tagline: 'Manufacturer workspace',
     person: 'Marcus Chen',
     org: 'Vanta Industrial Co.',
     initials: 'MC',
   },
-  store: {
-    label: 'Store',
+  market: {
+    label: 'Market',
     tagline: 'Retail buyer workspace',
     person: 'Sofia Reyes',
     org: 'Northgate Retail Group',
@@ -27,9 +27,9 @@ export const roleMeta: Record<
   },
 }
 
-/* ---------------- Supplier ---------------- */
+/* ---------------- Firma ---------------- */
 
-export const supplierSales = [
+export const firmaSales = [
   { month: 'Jan', revenue: 184000, orders: 320 },
   { month: 'Feb', revenue: 212000, orders: 372 },
   { month: 'Mar', revenue: 198000, orders: 341 },
@@ -44,14 +44,14 @@ export const supplierSales = [
   { month: 'Dec', revenue: 421000, orders: 701 },
 ]
 
-export const supplierCategoryMix = [
+export const firmaCategoryMix = [
   { category: 'Components', value: 42, fill: 'var(--color-components)' },
   { category: 'Packaging', value: 26, fill: 'var(--color-packaging)' },
   { category: 'Raw Material', value: 19, fill: 'var(--color-raw)' },
   { category: 'Tooling', value: 13, fill: 'var(--color-tooling)' },
 ]
 
-export const supplierTopCustomers = [
+export const firmaTopCustomers = [
   { name: 'Northgate Retail Group', orders: 184, spend: 412800, change: 12.4 },
   { name: 'Meridian Stores', orders: 142, spend: 318400, change: 8.1 },
   { name: 'Harbor & Co.', orders: 121, spend: 274900, change: -3.2 },
@@ -59,7 +59,7 @@ export const supplierTopCustomers = [
   { name: 'Civic Supply', orders: 76, spend: 168200, change: 2.9 },
 ]
 
-export const supplierRecentOrders = [
+export const firmaRecentOrders = [
   { id: 'ORD-90412', customer: 'Northgate Retail Group', items: 24, total: 18420, status: 'Processing', date: 'Jun 24' },
   { id: 'ORD-90408', customer: 'Meridian Stores', items: 12, total: 9240, status: 'Shipped', date: 'Jun 24' },
   { id: 'ORD-90401', customer: 'Harbor & Co.', items: 36, total: 27600, status: 'Delivered', date: 'Jun 23' },
@@ -68,16 +68,16 @@ export const supplierRecentOrders = [
   { id: 'ORD-90377', customer: 'Atlas Wholesale', items: 42, total: 31900, status: 'Cancelled', date: 'Jun 22' },
 ]
 
-export const supplierInventory = [
+export const firmaInventory = [
   { sku: 'CMP-1180', name: 'Precision Bearing Kit', stock: 1840, reorder: 500, status: 'Healthy' },
   { sku: 'PKG-4420', name: 'Recycled Mailer Box L', stock: 320, reorder: 400, status: 'Low' },
   { sku: 'RAW-0098', name: 'Aluminium Sheet 2mm', stock: 90, reorder: 250, status: 'Critical' },
   { sku: 'TOL-7731', name: 'CNC Cutter Head', stock: 612, reorder: 200, status: 'Healthy' },
 ]
 
-/* ---------------- Store ---------------- */
+/* ---------------- Market ---------------- */
 
-export const storeSpending = [
+export const marketSpending = [
   { month: 'Jan', spend: 42000 },
   { month: 'Feb', spend: 38500 },
   { month: 'Mar', spend: 51200 },
@@ -92,14 +92,14 @@ export const storeSpending = [
   { month: 'Dec', spend: 88600 },
 ]
 
-export const storeFavoriteSuppliers = [
+export const marketFavoriteSuppliers = [
   { name: 'Vanta Industrial Co.', category: 'Components', orders: 64, rating: 4.9 },
   { name: 'Solace Packaging', category: 'Packaging', orders: 41, rating: 4.7 },
   { name: 'Terra Goods', category: 'Raw Material', orders: 33, rating: 4.8 },
   { name: 'Pinnacle Tools', category: 'Tooling', orders: 22, rating: 4.6 },
 ]
 
-export const storeRecentPurchases = [
+export const marketRecentPurchases = [
   { id: 'PO-22841', supplier: 'Vanta Industrial Co.', items: 18, total: 12480, status: 'In Transit', date: 'Jun 24' },
   { id: 'PO-22835', supplier: 'Solace Packaging', items: 40, total: 4200, status: 'Delivered', date: 'Jun 23' },
   { id: 'PO-22829', supplier: 'Terra Goods', items: 9, total: 8870, status: 'Processing', date: 'Jun 23' },
@@ -107,7 +107,7 @@ export const storeRecentPurchases = [
   { id: 'PO-22812', supplier: 'Lumen Supply', items: 24, total: 15600, status: 'In Transit', date: 'Jun 21' },
 ]
 
-export const storeTracking = [
+export const marketTracking = [
   { id: 'PO-22841', supplier: 'Vanta Industrial Co.', eta: 'Jun 26', progress: 72, stage: 'Out for delivery' },
   { id: 'PO-22829', supplier: 'Terra Goods', eta: 'Jun 27', progress: 45, stage: 'In transit' },
   { id: 'PO-22812', supplier: 'Lumen Supply', eta: 'Jun 28', progress: 28, stage: 'Dispatched' },
@@ -137,7 +137,7 @@ export const adminRegions = [
   { region: 'Rest of World', value: 9, fill: 'var(--color-row)' },
 ]
 
-export const adminTopSuppliers = [
+export const adminTopFirmas = [
   { name: 'Vanta Industrial Co.', gmv: 4128000, stores: 184, health: 98 },
   { name: 'Solace Packaging', gmv: 3184000, stores: 142, health: 95 },
   { name: 'Terra Goods', gmv: 2749000, stores: 121, health: 91 },

@@ -51,7 +51,7 @@ import {
   adminGrowth,
   adminRegions,
   adminSystemHealth,
-  adminTopSuppliers,
+  adminTopFirmas,
 } from '@/lib/dashboard-data'
 
 const growthConfig = {
@@ -164,7 +164,7 @@ export function AdminDashboard() {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <Card className="glass lg:col-span-2">
           <CardHeader>
-            <CardTitle>Top suppliers</CardTitle>
+            <CardTitle>Top firmas</CardTitle>
             <CardDescription>By gross merchandise value</CardDescription>
           </CardHeader>
           <CardContent>
@@ -178,7 +178,7 @@ export function AdminDashboard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {adminTopSuppliers.map((s) => (
+                {adminTopFirmas.map((s) => (
                   <TableRow key={s.name}>
                     <TableCell className="font-medium">{s.name}</TableCell>
                     <TableCell className="text-right tabular-nums">{formatCurrency(s.gmv, true)}</TableCell>

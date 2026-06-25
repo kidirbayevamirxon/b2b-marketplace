@@ -42,10 +42,10 @@ import { PageHeader } from './page-header'
 import { StatusBadge } from './status-badge'
 import { formatCurrency, formatNumber } from '@/lib/format'
 import {
-  storeFavoriteSuppliers,
-  storeRecentPurchases,
-  storeSpending,
-  storeTracking,
+  marketFavoriteSuppliers,
+  marketRecentPurchases,
+  marketSpending,
+  marketTracking,
 } from '@/lib/dashboard-data'
 
 const spendConfig = {
@@ -75,7 +75,7 @@ export function StoreDashboard() {
           </CardHeader>
           <CardContent>
             <ChartContainer config={spendConfig} className="h-[280px] w-full">
-              <BarChart data={storeSpending} margin={{ left: 4, right: 8, top: 8 }}>
+              <BarChart data={marketSpending} margin={{ left: 4, right: 8, top: 8 }}>
                 <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="var(--border)" />
                 <XAxis dataKey="month" tickLine={false} axisLine={false} tickMargin={10} className="text-xs" />
                 <ChartTooltip
@@ -94,7 +94,7 @@ export function StoreDashboard() {
             <CardDescription>In-progress shipments</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-5">
-            {storeTracking.map((t) => (
+            {marketTracking.map((t) => (
               <div key={t.id} className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">{t.id}</span>
@@ -135,7 +135,7 @@ export function StoreDashboard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {storeRecentPurchases.map((p) => (
+                {marketRecentPurchases.map((p) => (
                   <TableRow key={p.id}>
                     <TableCell className="font-medium">{p.id}</TableCell>
                     <TableCell className="text-muted-foreground">{p.supplier}</TableCell>
@@ -154,7 +154,7 @@ export function StoreDashboard() {
             <CardDescription>Your most-trusted partners</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
-            {storeFavoriteSuppliers.map((s) => (
+            {marketFavoriteSuppliers.map((s) => (
               <div key={s.name} className="flex items-center gap-3">
                 <Avatar className="size-9">
                   <AvatarFallback className="bg-secondary text-xs font-medium">
