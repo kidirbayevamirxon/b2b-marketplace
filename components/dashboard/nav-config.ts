@@ -47,9 +47,8 @@ export const navByRole: Record<Role, NavGroup[]> = {
     {
       title: 'Insights',
       items: [
-        { label: 'Analytics', icon: BarChart3, href: "/analytics" },
-        // { label: 'Customers', icon: Users, href: "/customers" },
-        // { label: 'Payouts', icon: Wallet, href: "/payouts" },
+        { label: 'Analytics', icon: BarChart3, href: "/dashboard/analytics" },
+
       ],
     },
   ],
@@ -74,11 +73,6 @@ export const navByRole: Record<Role, NavGroup[]> = {
         icon: Factory,
         href: "/dashboard/suppliers",
       },
-      // {
-      //   label: "Favorites",
-      //   icon: Heart,
-      //   href: "/dashboard/favorites",
-      // },
     ],
   },
 ],
@@ -107,12 +101,6 @@ export const navByRole: Record<Role, NavGroup[]> = {
         icon: Package,
         href: "/dashboard/products",
       },
-      // {
-      //   label: "Orders",
-      //   icon: ShoppingCart,
-      //   href: "/dashboard/orders",
-      //   badge: "212",
-      // },
     ],
   },
 ],
@@ -122,11 +110,11 @@ export const bottomNav: NavItem[] = [
   {
     label: "Profile",
     icon: User,
-    href: "/profile",
+    href: "/dashboard/profile",
   },
   {
     label: "Support",
     icon: LifeBuoy,
-    href: "/support",
+    href: "/dashboard/support",
   },
 ];
