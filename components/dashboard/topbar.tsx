@@ -27,7 +27,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { roleMeta, type Role } from "@/lib/dashboard-data";
-
+import {useMe} from "@/hooks/useMe";
 const notifications = [
   {
     title: "New purchase order received",
@@ -63,6 +63,7 @@ export function Topbar({
   onOpenMobileNav: () => void;
 }) {
   const meta = roleMeta[role];
+  const { data } = useMe();
   const router = useRouter();
   const handleLogout = () => {
     localStorage.removeItem("access_token");
@@ -168,7 +169,7 @@ export function Topbar({
                   </AvatarFallback>
                 </Avatar>
                 <span className="hidden flex-col items-start leading-tight md:flex">
-                  <span className="text-sm font-medium">{meta.person}</span>
+                  <span className="text-sm font-medium">{data?.owner_first_name} {data?.owner_last_name}</span>
                   <span className="text-xs text-muted-foreground">
                     {meta.label}
                   </span>
@@ -179,7 +180,7 @@ export function Topbar({
           />
           <DropdownMenuContent align="end" className="w-60">
             <DropdownMenuLabel className="flex flex-col">
-              <span className="text-sm">{meta.person}</span>
+              <span className="text-sm">{data?.owner_first_name} {data?.owner_last_name}</span>
               <span className="text-xs font-normal text-muted-foreground">
                 {meta.org}
               </span>

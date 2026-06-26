@@ -15,13 +15,16 @@ import {
 import { api } from "@/api/api";
 
 export default function ProfilePage() {
-  const { data, isLoading } = useQuery({
-    queryKey: ["me"],
-    queryFn: async () => {
-      const res = await api.get("/auth/me");
-      return res.data.account;
-    },
-  });
+const { data, isLoading } = useQuery({
+  queryKey: ["me"],
+  queryFn: async () => {
+    const res = await api.get("/auth/me");
+    return res.data.account;
+  },
+  staleTime: 0,
+  gcTime: 0,
+  refetchOnMount: "always",
+});
 
   if (isLoading) {
     return (

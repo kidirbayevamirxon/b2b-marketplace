@@ -2,9 +2,10 @@ export type Role = 'firma' | 'market' | 'admin'
 
 export const roleMeta: Record<
   Role,
-  { label: string; tagline: string; person: string; org: string; initials: string }
+  { title: string; label: string; tagline: string; person: string; org: string; initials: string }
 > = {
   firma: {
+    title: 'Firma',
     label: 'Firma',
     tagline: 'Manufacturer workspace',
     person: 'Marcus Chen',
@@ -12,6 +13,7 @@ export const roleMeta: Record<
     initials: 'MC',
   },
   market: {
+    title: 'Market',
     label: 'Market',
     tagline: 'Retail buyer workspace',
     person: 'Sofia Reyes',
@@ -19,6 +21,7 @@ export const roleMeta: Record<
     initials: 'SR',
   },
   admin: {
+    title: 'Super Admin',
     label: 'Super Admin',
     tagline: 'Platform operations',
     person: 'Avery Okafor',
