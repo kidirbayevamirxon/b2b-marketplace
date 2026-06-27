@@ -1,5 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   Bell,
   Check,
@@ -11,6 +12,7 @@ import {
   Settings,
   Sun,
   User,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,29 +29,29 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { roleMeta, type Role } from "@/lib/dashboard-data";
-import {useMe} from "@/hooks/useMe";
-const notifications = [
-  {
-    title: "New purchase order received",
-    meta: "Northgate Retail · 2m ago",
-    tone: "bg-primary",
-  },
-  {
-    title: "Inventory critical: Aluminium Sheet",
-    meta: "Warehouse 3 · 24m ago",
-    tone: "bg-destructive",
-  },
-  {
-    title: "Payout of $48,200 processed",
-    meta: "Finance · 1h ago",
-    tone: "bg-chart-3",
-  },
-  {
-    title: "Supplier KYC approved",
-    meta: "Compliance · 3h ago",
-    tone: "bg-warning",
-  },
-];
+import { useMe } from "@/hooks/useMe";
+import { api } from "@/api/api";
+import { useToast } from "@/hooks/use-toast";
+
+// Types
+interface Notification {
+  id: string;
+  title: string;
+  message?: string;
+  type?: string;
+  is_read: boolean;
+  created_at: string;
+  read_at?: string | null;
+  data?: any;
+}
+
+interface NotificationsResponse {
+  page: number;
+  limit: number;
+  total: number;
+  pages: number;
+  notifications: Notification[];
+}
 
 export function Topbar({
   role,
@@ -65,15 +67,150 @@ export function Topbar({
   const meta = roleMeta[role];
   const { data } = useMe();
   const router = useRouter();
+  const { toast } = useToast();
+
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [loadingNotifications, setLoadingNotifications] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+
   const handleLogout = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("role");
-
     router.push("/login");
   };
+
   const goToProfile = () => {
     router.push("/profile");
   };
+
+  // Fetch notifications
+  const fetchNotifications = async () => {
+    try {
+      setLoadingNotifications(true);
+      const response = await api.get<NotificationsResponse>("/notifications/me", {
+        params: {
+          page: 1,
+          limit: 20,
+        },
+      });
+
+      const data = response.data;
+      setNotifications(data.notifications || []);
+      
+      // Count unread notifications
+      const unread = (data.notifications || []).filter((n) => !n.is_read).length;
+      setUnreadCount(unread);
+    } catch (error: any) {
+      console.error("Error fetching notifications:", error);
+    } finally {
+      setLoadingNotifications(false);
+    }
+  };
+
+  // Mark notification as read
+  const markAsRead = async (notificationId: string) => {
+    try {
+      await api.patch(`/notifications/${notificationId}/read`);
+      
+      // Update local state
+      setNotifications((prev) =>
+        prev.map((n) =>
+          n.id === notificationId ? { ...n, is_read: true, read_at: new Date().toISOString() } : n
+        )
+      );
+      setUnreadCount((prev) => Math.max(0, prev - 1));
+    } catch (error: any) {
+      console.error("Error marking notification as read:", error);
+    }
+  };
+
+  // Mark all as read
+  const markAllAsRead = async () => {
+    try {
+      await api.patch("/notifications/read-all");
+      
+      // Update local state
+      setNotifications((prev) =>
+        prev.map((n) => ({ ...n, is_read: true, read_at: new Date().toISOString() }))
+      );
+      setUnreadCount(0);
+      
+      toast({
+        title: "Success",
+        description: "All notifications marked as read",
+        variant: "success",
+      });
+    } catch (error: any) {
+      console.error("Error marking all as read:", error);
+      toast({
+        title: "Error",
+        description: "Failed to mark all as read",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Load notifications when dropdown opens
+  useEffect(() => {
+    if (isNotificationsOpen) {
+      fetchNotifications();
+    }
+  }, [isNotificationsOpen]);
+
+  // Initial load
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  // Get notification icon based on type
+  const getNotificationIcon = (type?: string) => {
+    switch (type) {
+      case "order":
+        return "🛒";
+      case "payment":
+        return "💰";
+      case "inventory":
+        return "📦";
+      case "kyc":
+        return "📋";
+      default:
+        return "🔔";
+    }
+  };
+
+  // Get notification tone based on type
+  const getNotificationTone = (type?: string) => {
+    switch (type) {
+      case "order":
+        return "bg-blue-500";
+      case "payment":
+        return "bg-green-500";
+      case "inventory":
+        return "bg-red-500";
+      case "kyc":
+        return "bg-yellow-500";
+      default:
+        return "bg-primary";
+    }
+  };
+
+  // Format time
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return "Just now";
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return date.toLocaleDateString();
+  };
+
   return (
     <header className="glass sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border/60 px-4 lg:px-6">
       <Button
@@ -107,50 +244,105 @@ export function Topbar({
           {isDark ? <Sun className="size-5" /> : <Moon className="size-5" />}
         </Button>
 
-        <DropdownMenu>
+        {/* Notifications Dropdown */}
+        <DropdownMenu open={isNotificationsOpen} onOpenChange={setIsNotificationsOpen}>
           <DropdownMenuTrigger
-            render={
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative"
-                aria-label="Notifications"
-              >
-                <Bell className="size-5" />
-                <span className="absolute right-2 top-2 size-2 rounded-full bg-primary ring-2 ring-card" />
-              </Button>
-            }
-          />
-          <DropdownMenuContent align="end" className="w-80">
+          //@ts-ignore
+          asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative"
+              aria-label="Notifications"
+            >
+              <Bell className="size-5" />
+              {unreadCount > 0 && (
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-white ring-2 ring-card">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-80 max-h-[500px] overflow-y-auto">
             <DropdownMenuLabel className="flex items-center justify-between">
-              Notifications
-              <span className="rounded-full bg-primary/15 px-1.5 py-0.5 text-[10px] font-medium text-primary">
-                4 new
-              </span>
+              <span>Notifications</span>
+              {unreadCount > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-auto text-xs text-primary px-2"
+                  onClick={markAllAsRead}
+                >
+                  Mark all as read
+                </Button>
+              )}
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              {notifications.map((n) => (
-                <DropdownMenuItem
-                  key={n.title}
-                  className="flex items-start gap-3 py-2.5"
-                >
-                  <span
-                    className={`mt-1 size-2 shrink-0 rounded-full ${n.tone}`}
-                  />
-                  <span className="flex flex-col gap-0.5">
-                    <span className="text-sm leading-tight">{n.title}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {n.meta}
+
+            {loadingNotifications ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              </div>
+            ) : notifications.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-8 text-center">
+                <Bell className="h-10 w-10 text-muted-foreground/50 mb-2" />
+                <p className="text-sm text-muted-foreground">No notifications</p>
+                <p className="text-xs text-muted-foreground/70">
+                  You're all caught up!
+                </p>
+              </div>
+            ) : (
+              <DropdownMenuGroup>
+                {notifications.map((notification) => (
+                  <DropdownMenuItem
+                    key={notification.id}
+                    className={`flex items-start gap-3 py-2.5 cursor-pointer ${
+                      !notification.is_read ? "bg-primary/5" : ""
+                    }`}
+                    onClick={() => {
+                      if (!notification.is_read) {
+                        markAsRead(notification.id);
+                      }
+                    }}
+                  >
+                    <span
+                      className={`mt-1 flex h-2 w-2 shrink-0 rounded-full ${
+                        notification.is_read ? "bg-muted" : getNotificationTone(notification.type)
+                      }`}
+                    />
+                    <span className="flex flex-col gap-0.5 flex-1 min-w-0">
+                      <span className="text-sm leading-tight flex items-center gap-1.5">
+                        <span>{getNotificationIcon(notification.type)}</span>
+                        <span className="font-medium">{notification.title}</span>
+                      </span>
+                      {notification.message && (
+                        <span className="text-xs text-muted-foreground line-clamp-2">
+                          {notification.message}
+                        </span>
+                      )}
+                      <span className="text-[10px] text-muted-foreground/70 mt-0.5">
+                        {formatTime(notification.created_at)}
+                      </span>
                     </span>
-                  </span>
+                    {!notification.is_read && (
+                      <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary" />
+                    )}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuGroup>
+            )}
+
+            {notifications.length > 0 && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="justify-center text-sm text-primary cursor-pointer"
+                  onClick={() => router.push("/notifications")}
+                >
+                  View all notifications
                 </DropdownMenuItem>
-              ))}
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="justify-center text-sm text-primary">
-              View all activity
-            </DropdownMenuItem>
+              </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
 
@@ -159,55 +351,56 @@ export function Topbar({
           className="mx-1 hidden h-8 sm:block"
         />
 
+        {/* User Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger
-            render={
-              <button className="flex items-center gap-2 rounded-full py-1 pl-1 pr-2 transition-colors hover:bg-secondary/60">
-                <Avatar className="size-8">
-                  <AvatarFallback className="bg-primary/15 text-xs font-semibold text-primary">
-                    {meta.initials}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="hidden flex-col items-start leading-tight md:flex">
-                  <span className="text-sm font-medium">{data?.owner_first_name} {data?.owner_last_name}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {meta.label}
-                  </span>
+          //@ts-ignore
+          asChild>
+            <button className="flex items-center gap-2 rounded-full py-1 pl-1 pr-2 transition-colors hover:bg-secondary/60">
+              <Avatar className="size-8">
+                <AvatarFallback className="bg-primary/15 text-xs font-semibold text-primary">
+                  {meta.initials}
+                </AvatarFallback>
+              </Avatar>
+              <span className="hidden flex-col items-start leading-tight md:flex">
+                <span className="text-sm font-medium">
+                  {data?.owner_first_name} {data?.owner_last_name}
                 </span>
-                <ChevronDown className="hidden size-4 text-muted-foreground md:block" />
-              </button>
-            }
-          />
+                <span className="text-xs text-muted-foreground">
+                  {meta.label}
+                </span>
+              </span>
+              <ChevronDown className="hidden size-4 text-muted-foreground md:block" />
+            </button>
+          </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-60">
             <DropdownMenuLabel className="flex flex-col">
-              <span className="text-sm">{data?.owner_first_name} {data?.owner_last_name}</span>
+              <span className="text-sm">
+                {data?.owner_first_name} {data?.owner_last_name}
+              </span>
               <span className="text-xs font-normal text-muted-foreground">
                 {meta.org}
               </span>
             </DropdownMenuLabel>
-            <DropdownMenuTrigger
-              render={
-                <Button variant="outline" size="sm">
-                  🇺🇿 Uzbek
-                  <ChevronDown className="size-4 ml-2" />
-                </Button>
-              }
-            />
-
-            <DropdownMenuContent>
-              <DropdownMenuItem>🇺🇿 O'zbekcha</DropdownMenuItem>
-              <DropdownMenuItem>🇷🇺 Русский</DropdownMenuItem>
-              <DropdownMenuItem>🇬🇧 English</DropdownMenuItem>
-            </DropdownMenuContent>
+            <DropdownMenuSeparator />
+            
             <DropdownMenuGroup>
               <DropdownMenuItem onClick={goToProfile}>
-                <User className="size-4" />
+                <User className="size-4 mr-2" />
                 Profile
               </DropdownMenuItem>
-              <DropdownMenuItem variant="destructive" onClick={handleLogout}>
-                <LogOut className="size-4" /> Sign out
+              <DropdownMenuItem>
+                <Settings className="size-4 mr-2" />
+                Settings
               </DropdownMenuItem>
             </DropdownMenuGroup>
+            
+            <DropdownMenuSeparator />
+            
+            <DropdownMenuItem variant="destructive" onClick={handleLogout}>
+              <LogOut className="size-4 mr-2" />
+              Sign out
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

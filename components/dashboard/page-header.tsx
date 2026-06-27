@@ -16,16 +16,7 @@ export function PageHeader({
         </h1>
         <p className="text-sm text-muted-foreground text-pretty">{subtitle}</p>
       </div>
-      <div className="flex items-center gap-2">
-        <Button variant="outline" size="sm" className="bg-card/50">
-          <CalendarRange data-icon="inline-start" />
-          Last 12 months
-        </Button>
-        <Button size="sm">
-          <Download data-icon="inline-start" />
-          Export
-        </Button>
-      </div>
+    
     </div>
   )
 }
