@@ -568,20 +568,7 @@ export default function PurchasesPage() {
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
-  // Fetch product types
-  const fetchProductTypes = async () => {
-    try {
-      setLoadingProducts(true);
-      const response = await api.get("/admin/product-types", {
-        params: { page: 1, limit: 100 },
-      });
-      setProductTypes(response.data.product_types || []);
-    } catch (error: any) {
-      console.error("Error fetching product types:", error);
-    } finally {
-      setLoadingProducts(false);
-    }
-  };
+
 
   const fetchOrders = async () => {
     try {
@@ -620,7 +607,6 @@ export default function PurchasesPage() {
 
   useEffect(() => {
     fetchOrders();
-    fetchProductTypes();
   }, []);
 
   const handleLocationSelect = (lat: number, lng: number, address: string) => {
