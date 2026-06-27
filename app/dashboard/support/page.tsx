@@ -31,29 +31,7 @@ export default function SupportPage() {
 
       <div className="grid gap-6 md:grid-cols-3">
 
-        <Card className="border-primary/20 bg-primary/5">
-          <CardContent className="flex flex-col items-center gap-4 p-8 text-center">
 
-            <div className="rounded-full bg-primary/10 p-4">
-              <MessageCircle className="h-8 w-8 text-primary" />
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold">
-                Live Chat
-              </h3>
-
-              <p className="mt-2 text-sm text-muted-foreground">
-                Chat instantly with our support team.
-              </p>
-            </div>
-
-            <Button className="w-full">
-              Start Chat
-            </Button>
-
-          </CardContent>
-        </Card>
 
         <Card>
           <CardContent className="flex flex-col items-center gap-4 p-8 text-center">
@@ -68,7 +46,8 @@ export default function SupportPage() {
               </h3>
 
               <p className="mt-2 text-sm text-muted-foreground">
-                support@nexus.uz
+                bekbolatjabbarbergenov@gmail.com
+
               </p>
             </div>
 
@@ -95,7 +74,7 @@ export default function SupportPage() {
               </h3>
 
               <p className="mt-2 text-sm text-muted-foreground">
-                +998 90 123 45 67
+                +998 99 955 77 66
               </p>
             </div>
 
@@ -220,7 +199,7 @@ export default function SupportPage() {
                   </p>
 
                   <p className="text-sm text-muted-foreground">
-                    Monday - Friday
+                    Everyday
                   </p>
 
                   <p className="text-sm text-muted-foreground">
@@ -242,7 +221,9 @@ export default function SupportPage() {
                   </p>
 
                   <p className="text-sm text-muted-foreground">
-                    support@nexus.uz
+                    bekbolatjabbarbergenov@gmail.com
+
+
                   </p>
 
                 </div>
@@ -260,7 +241,9 @@ export default function SupportPage() {
                   </p>
 
                   <p className="text-sm text-muted-foreground">
-                    +998 90 123 45 67
+                    +998 99 955 77 66
+
+
                   </p>
 
                 </div>
