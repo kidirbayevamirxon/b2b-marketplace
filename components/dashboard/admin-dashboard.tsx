@@ -137,7 +137,7 @@ export function AdminDashboard() {
                             </tspan>
                             <tspan x={viewBox.cx} y={(viewBox.cy ?? 0) + 20} className="fill-muted-foreground text-xs">
                               total GMV
-                            </tspan>
+                            </tspan>  
                           </text>
                         )
                       }
