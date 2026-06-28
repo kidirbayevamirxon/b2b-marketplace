@@ -13,18 +13,20 @@ interface AppShellProps {
 export function AppShell({ children }: AppShellProps) {
   const [isDark, setIsDark] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [role, setRole] = useState<Role | null>(null);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", isDark);
   }, [isDark]);
 
-  const role =
-    typeof window !== "undefined"
-      ? (localStorage.getItem("role") as Role)
-      : null;
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setRole(localStorage.getItem("role") as Role);
+    }
+  }, []);
 
   if (!role) {
-    return <div>Loading...</div>;
+    return <div className="flex min-h-screen items-center justify-center bg-background">Loading...</div>;
   }
 
   return (

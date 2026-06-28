@@ -1,23 +1,27 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { useState } from "react";
+import NewOrderModal from "./new-orders-madal";
 
-export function OrdersToolbar() {
-    return (
-        <div className="rounded-xl border bg-card p-4">
+export default function OrdersToolbar() {
+  const [open, setOpen] = useState(false);
 
-            <div className="relative max-w-sm">
+  return (
+    <>
+      <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+          Orders
+        </h2>
 
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+        <button
+          onClick={() => setOpen(true)}
+          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
+        >
+          + New Order
+        </button>
+      </div>
 
-                <Input
-                    placeholder="Search orders..."
-                    className="pl-10"
-                />
-
-            </div>
-
-        </div>
-    );
+      {open && <NewOrderModal onClose={() => setOpen(false)} />}
+    </>
+  );
 }

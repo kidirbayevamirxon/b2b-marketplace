@@ -11,4 +11,14 @@ export const OrderService = {
 
     return data;
   },
+
+  updateOrder: async (id: string, payload: { status?: string }) => {
+    const { data } = await api.patch(`/orders/${id}`, payload);
+    return data;
+  },
+
+  deleteOrder: async (id: string) => {
+    const { data } = await api.delete(`/orders/${id}`);
+    return data;
+  },
 };

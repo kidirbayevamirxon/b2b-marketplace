@@ -17,7 +17,7 @@ import { useDeleteProduct } from "@/hooks/use-delete-product";
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-
+onSuccess?: () => void;
   product: any;
 }
 
@@ -25,17 +25,18 @@ export function DeleteProductDialog({
   open,
   onOpenChange,
   product,
+  onSuccess,
 }: Props) {
   const mutation = useDeleteProduct();
 
-  const handleDelete = () => {
-    mutation.mutate(product.id, {
-      onSuccess() {
-        onOpenChange(false);
-      },
-    });
-  };
-
+ const handleDelete = () => {
+  mutation.mutate(product.id, {
+    onSuccess() {
+      onOpenChange(false);
+      onSuccess?.(); 
+    },
+  });
+};
   return (
     <AlertDialog
       open={open}

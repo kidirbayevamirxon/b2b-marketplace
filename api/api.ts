@@ -1,7 +1,17 @@
 import axios from "axios";
 
+const getApiBaseUrl = () => {
+  const configuredBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL;
+
+  if (configuredBaseUrl) {
+    return configuredBaseUrl.replace(/\/$/, "");
+  }
+
+  return "http://localhost:8000";
+};
+
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: getApiBaseUrl(),
   headers: {
     "Content-Type": "application/json",
     "ngrok-skip-browser-warning": "true",

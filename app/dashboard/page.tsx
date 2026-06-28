@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { api } from "@/api/api";
 import { SupplierDashboard } from "@/components/dashboard/supplier-dashboard";
 import { StoreDashboard } from "@/components/dashboard/store-dashboard";
 import { AdminDashboard } from "@/components/dashboard/admin-dashboard";
-import { api } from "@/api/api";
 
 interface DashboardData {
   role: string;
