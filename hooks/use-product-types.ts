@@ -3,24 +3,26 @@
 import { useQuery } from "@tanstack/react-query";
 import { ProductApi } from "@/api/product";
 
+function normalizeProductTypes(payload: any) {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.product_types)) return payload.product_types;
+  if (Array.isArray(payload?.data)) return payload.data;
+  if (Array.isArray(payload?.data?.product_types)) return payload.data.product_types;
+  if (Array.isArray(payload?.results)) return payload.results;
+  return [];
+}
+
 export function useProductTypes() {
   return useQuery({
     queryKey: ["product-types"],
-
     queryFn: async () => {
-      const data = await ProductApi.getTypes();
+      console.log("GET PRODUCT TYPES");
 
-      if (Array.isArray(data)) {
-        return data;
-      }
+      const res = await ProductApi.getProductTypes();
 
-      if (Array.isArray(data?.items)) {
-        return data.items;
-      }
+      console.log(res);
 
-      return [];
+      return res.product_types ?? [];
     },
-
-    staleTime: 1000 * 60 * 10,
   });
 }

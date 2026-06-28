@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Search,
@@ -12,16 +12,27 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 import { CreateProductDialog } from "./create-product-dialog";
-
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 export function ProductToolbar({
   search,
   onSearch,
+  onStockFilter,
 }: {
   search: string;
   onSearch: (v: string) => void;
+  stockFilter: string;
+  onStockFilter: (v: any) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [stockFilter, setStockFilter] =
+    useState<"all" | "in" | "low">("all");
+  useEffect(() => {
+    const t = setTimeout(() => {
+      onSearch(search);
+    }, 300);
 
+    return () => clearTimeout(t);
+  }, [search]);
   return (
     <>
       <div className="rounded-2xl border bg-card p-5">
@@ -42,11 +53,22 @@ export function ProductToolbar({
           </div>
 
           <div className="flex gap-3">
+            <Select
+              value={stockFilter}
+              onValueChange={(value) => {
+                if (!value) return;
+                setStockFilter(value as "all" | "in" | "low");
+              }}
+            >              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Stock filter" />
+              </SelectTrigger>
 
-            <Button variant="outline">
-              <Filter className="mr-2 h-4 w-4" />
-              Filters
-            </Button>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="in">In stock</SelectItem>
+                <SelectItem value="low">Low stock</SelectItem>
+              </SelectContent>
+            </Select>
 
             <Button onClick={() => setOpen(true)}>
               <Plus className="mr-2 h-4 w-4" />

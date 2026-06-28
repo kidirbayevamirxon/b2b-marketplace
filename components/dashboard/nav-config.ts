@@ -39,18 +39,18 @@ export const navByRole: Record<Role, NavGroup[]> = {
       title: 'Workspace',
       items: [
         { label: 'Dashboard', icon: LayoutDashboard, href: "/dashboard", active: true },
-        { label: 'Orders', icon: ShoppingCart, href: "/dashboard/orders", badge: '14' },
+        // { label: 'Orders', icon: ShoppingCart, href: "/dashboard/orders", badge: '14' },
         { label: 'Products', icon: Package, href: "/dashboard/products" },
-        { label: 'Inventory', icon: Boxes, href: "/dashboard/inventory" },
+        // { label: 'Inventory', icon: Boxes, href: "/dashboard/inventory" },
       ],
     },
-    {
-      title: 'Insights',
-      items: [
-        { label: 'Analytics', icon: BarChart3, href: "/dashboard/analytics" },
+    // {
+    //   title: 'Insights',
+    //   items: [
+    //     { label: 'Analytics', icon: BarChart3, href: "/dashboard/analytics" },
 
-      ],
-    },
+    //   ],
+    // },
   ],
   market: [
   {

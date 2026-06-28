@@ -1,117 +1,67 @@
 "use client";
 
-import {
-    BadgeCheck,
-    Clock3,
-    Truck,
-} from "lucide-react";
+import { Trash2 } from "lucide-react";
 
-import {
-    Table,
-    TableHeader,
-    TableBody,
-    TableHead,
-    TableCell,
-    TableRow,
-} from "@/components/ui/table";
-
-function Status({ status }: { status: string }) {
-
-    if (status === "Pending")
-        return (
-            <span className="inline-flex items-center gap-2 rounded-full bg-yellow-500/10 px-3 py-1 text-sm text-yellow-500">
-                <Clock3 className="h-4 w-4" />
-                Pending
-            </span>
-        );
-
-    if (status === "Confirmed")
-        return (
-            <span className="inline-flex items-center gap-2 rounded-full bg-blue-500/10 px-3 py-1 text-sm text-blue-500">
-                <BadgeCheck className="h-4 w-4" />
-                Confirmed
-            </span>
-        );
-
+export default function OrdersTable({
+  orders,
+  loading,
+  onUpdateStatus,
+  onDelete,
+}: any) {
+  if (loading) {
     return (
-        <span className="inline-flex items-center gap-2 rounded-full bg-green-500/10 px-3 py-1 text-sm text-green-500">
-            <Truck className="h-4 w-4" />
-            Delivered
-        </span>
+      <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-6 text-sm text-slate-600 shadow-sm dark:border-slate-800 dark:bg-slate-900/70 dark:text-slate-300">
+        Loading orders...
+      </div>
     );
-}
+  }
 
-export function OrdersTable({ orders }: any) {
+  return (
+    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950">
+      <table className="w-full text-sm">
+        <thead className="bg-slate-50 text-slate-600 dark:bg-slate-900/70 dark:text-slate-300">
+          <tr className="text-left">
+            <th className="px-4 py-3 font-medium">Shop</th>
+            <th className="px-4 py-3 font-medium">Total</th>
+            <th className="px-4 py-3 font-medium">Status</th>
+            <th className="px-4 py-3 font-medium">Action</th>
+          </tr>
+        </thead>
 
-    return (
-        <div className="overflow-hidden rounded-2xl border bg-card">
+        <tbody>
+          {orders.map((o: any) => (
+            <tr key={o.id} className="border-t border-slate-200 bg-white/70 dark:border-slate-800 dark:bg-slate-950/70">
+              <td className="px-4 py-3 font-medium text-slate-900 dark:text-slate-100">
+                {o.shop?.name || "Shop"}
+              </td>
+              <td className="px-4 py-3 text-slate-700 dark:text-slate-300">${o.total}</td>
 
-            <Table>
+              <td className="px-4 py-3">
+                <select
+                  value={o.status}
+                  onChange={(e) => onUpdateStatus(o.id, e.target.value)}
+                  className="rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-700 outline-none transition focus:border-primary focus:ring-1 focus:ring-primary dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                >
+                  <option value="pending">pending</option>
+                  <option value="accepted">accepted</option>
+                  <option value="rejected">rejected</option>
+                  <option value="shipped">shipped</option>
+                  <option value="delivered">delivered</option>
+                </select>
+              </td>
 
-                <TableHeader>
-
-                    <TableRow>
-
-                        <TableHead>Order</TableHead>
-
-                        <TableHead>Market</TableHead>
-
-                        <TableHead>Product</TableHead>
-
-                        <TableHead>Qty</TableHead>
-
-                        <TableHead>Total</TableHead>
-
-                        <TableHead>Status</TableHead>
-
-                        <TableHead>Date</TableHead>
-
-                    </TableRow>
-
-                </TableHeader>
-
-                <TableBody>
-
-                    {orders.map((order: any) => (
-
-                        <TableRow key={order.id}>
-
-                            <TableCell className="font-semibold">
-                                {order.id}
-                            </TableCell>
-
-                            <TableCell>
-                                {order.market}
-                            </TableCell>
-
-                            <TableCell>
-                                {order.product}
-                            </TableCell>
-
-                            <TableCell>
-                                {order.quantity}
-                            </TableCell>
-
-                            <TableCell>
-                                ${order.amount}
-                            </TableCell>
-
-                            <TableCell>
-                                <Status status={order.status} />
-                            </TableCell>
-
-                            <TableCell>
-                                {order.date}
-                            </TableCell>
-
-                        </TableRow>
-
-                    ))}
-
-                </TableBody>
-
-            </Table>
-
-        </div>
-    );
+              <td className="px-4 py-3">
+                <button
+                  onClick={() => onDelete(o.id)}
+                  className="rounded-md p-2 text-rose-500 transition-colors hover:bg-rose-500/10 hover:text-rose-600"
+                >
+                  <Trash2 size={18} />
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }

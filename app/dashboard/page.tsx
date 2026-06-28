@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { api } from "@/api/api";
 import { SupplierDashboard } from "@/components/dashboard/supplier-dashboard";
 import { StoreDashboard } from "@/components/dashboard/store-dashboard";
 import { AdminDashboard } from "@/components/dashboard/admin-dashboard";
@@ -37,17 +38,7 @@ export default function DashboardPage() {
       setLoading(true);
       setError(null);
 
-      const response = await fetch("/api/analytics/dashboard", {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
+      const { data } = await api.get("/analytics/dashboard");
       setDashboardData(data);
     } catch (err) {
       console.error("Error fetching dashboard data:", err);

@@ -10,11 +10,13 @@ import { useProducts } from "@/hooks/use-products";
 export default function ProductsPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-
-  const { data, isLoading } = useProducts(page, search);
-
-  const products = data?.items ?? [];
-
+  const [stockFilter, setStockFilter] = useState<"all" | "in" | "low">("all");
+  const {
+    data,
+    isLoading,
+    refetch,
+  } = useProducts(page, search);
+  const products = data?.products ?? [];
   const total = data?.total ?? 0;
 
   const inStock = products.filter((i: any) => i.stock_quantity > 0).length;
@@ -64,10 +66,11 @@ export default function ProductsPage() {
         />
 
       </div>
-
       <ProductToolbar
         search={search}
         onSearch={setSearch}
+        stockFilter={stockFilter}
+        onStockFilter={setStockFilter}
       />
 
       <ProductTable
@@ -76,6 +79,7 @@ export default function ProductsPage() {
         page={page}
         total={total}
         onPageChange={setPage}
+        onRefresh={refetch}
       />
 
     </div>

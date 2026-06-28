@@ -1,75 +1,22 @@
-"use client";
+export default function OrdersStats({ orders }: any) {
+  const total = orders.length;
+  const pending = orders.filter((o: any) => o.status === "pending").length;
+  const delivered = orders.filter((o: any) => o.status === "delivered").length;
 
-import {
-    ShoppingCart,
-    Clock3,
-    CheckCircle2,
-    DollarSign,
-} from "lucide-react";
-
-export function OrdersStats({ orders }: any) {
-    const totalRevenue = orders.reduce(
-        (sum: number, item: any) => sum + item.amount,
-        0
-    );
-
-    const cards = [
-        {
-            title: "Total Orders",
-            value: orders.length,
-            icon: ShoppingCart,
-        },
-        {
-            title: "Pending",
-            value: orders.filter((o: any) => o.status === "Pending").length,
-            icon: Clock3,
-        },
-        {
-            title: "Delivered",
-            value: orders.filter((o: any) => o.status === "Delivered").length,
-            icon: CheckCircle2,
-        },
-        {
-            title: "Revenue",
-            value: `$${totalRevenue}`,
-            icon: DollarSign,
-        },
-    ];
-
-    return (
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-
-            {cards.map((card) => {
-                const Icon = card.icon;
-
-                return (
-                    <div
-                        key={card.title}
-                        className="rounded-2xl border bg-card p-6"
-                    >
-                        <div className="flex items-center justify-between">
-
-                            <div>
-
-                                <p className="text-sm text-muted-foreground">
-                                    {card.title}
-                                </p>
-
-                                <h2 className="mt-2 text-3xl font-bold">
-                                    {card.value}
-                                </h2>
-
-                            </div>
-
-                            <div className="rounded-xl bg-primary/10 p-3">
-                                <Icon className="h-6 w-6 text-primary" />
-                            </div>
-
-                        </div>
-                    </div>
-                );
-            })}
-
-        </div>
-    );
+  return (
+    <div className="grid gap-4 md:grid-cols-3">
+      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/70">
+        <p className="text-sm text-slate-600 dark:text-slate-300">Total</p>
+        <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-slate-100">{total}</p>
+      </div>
+      <div className="rounded-2xl border border-amber-200 bg-amber-50/80 p-4 shadow-sm dark:border-amber-800/50 dark:bg-amber-950/40">
+        <p className="text-sm text-amber-700 dark:text-amber-300">Pending</p>
+        <p className="mt-2 text-2xl font-semibold text-amber-900 dark:text-amber-100">{pending}</p>
+      </div>
+      <div className="rounded-2xl border border-emerald-200 bg-emerald-50/80 p-4 shadow-sm dark:border-emerald-800/50 dark:bg-emerald-950/40">
+        <p className="text-sm text-emerald-700 dark:text-emerald-300">Delivered</p>
+        <p className="mt-2 text-2xl font-semibold text-emerald-900 dark:text-emerald-100">{delivered}</p>
+      </div>
+    </div>
+  );
 }

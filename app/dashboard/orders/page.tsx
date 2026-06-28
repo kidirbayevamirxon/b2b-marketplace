@@ -1,4 +1,4 @@
-import { OrdersPage } from "@/components/dashboard/orders/orders-page";
+import OrdersPage from "@/components/dashboard/orders/orders-page";
 
 export default function Page() {
   return <OrdersPage />;
