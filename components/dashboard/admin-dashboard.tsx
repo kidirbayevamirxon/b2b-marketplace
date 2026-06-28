@@ -1,5 +1,7 @@
-'use client'
 
+'use client';
+
+import { useEffect, useState } from 'react';
 import {
   Area,
   AreaChart,
@@ -9,7 +11,7 @@ import {
   Pie,
   PieChart,
   XAxis,
-} from 'recharts'
+} from 'recharts';
 import {
   Activity,
   DollarSign,
@@ -18,14 +20,14 @@ import {
   ShoppingCart,
   Store,
   Truck,
-} from 'lucide-react'
+} from 'lucide-react';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
+} from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -33,7 +35,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
+} from '@/components/ui/table';
 import {
   ChartContainer,
   ChartTooltip,
@@ -41,23 +43,25 @@ import {
   ChartLegend,
   ChartLegendContent,
   type ChartConfig,
-} from '@/components/ui/chart'
-import { Progress } from '@/components/ui/progress'
-import { KpiCard } from './kpi-card'
-import { PageHeader } from './page-header'
-import { StatusBadge } from './status-badge'
-import { formatCurrency, formatNumber } from '@/lib/format'
+} from '@/components/ui/chart';
+import { Progress } from '@/components/ui/progress';
+import { KpiCard } from './kpi-card';
+import { PageHeader } from './page-header';
+import { StatusBadge } from './status-badge';
+import { formatCurrency, formatNumber } from '@/lib/format';
 import {
-  adminGrowth,
-  adminRegions,
-  adminSystemHealth,
-  adminTopFirmas,
-} from '@/lib/dashboard-data'
+  transformSummaryToKpis,
+  generateGrowthData,
+  getRegionData,
+  getTopFirmas,
+  getSystemHealth,
+} from '@/lib/dashboard-data-transform';
+import { AdminDashboardStats, fetchAdminDashboard } from '@/lib/admin-dashboard';
 
 const growthConfig = {
   suppliers: { label: 'Suppliers', color: 'var(--chart-1)' },
   stores: { label: 'Stores', color: 'var(--chart-3)' },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 const regionConfig = {
   value: { label: 'Share' },
@@ -65,9 +69,80 @@ const regionConfig = {
   eu: { label: 'Europe', color: 'var(--chart-2)' },
   apac: { label: 'Asia Pacific', color: 'var(--chart-3)' },
   row: { label: 'Rest of World', color: 'var(--chart-4)' },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 export function AdminDashboard() {
+  const [dashboardData, setDashboardData] = useState<AdminDashboardStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadDashboard = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchAdminDashboard();
+        setDashboardData(data);
+        setError(null);
+      } catch (err) {
+        console.error('Error loading dashboard:', err);
+        setError('Failed to load dashboard data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDashboard();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col gap-6">
+        <PageHeader
+          title="Platform overview"
+          subtitle="Loading dashboard data..."
+        />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <Card key={i} className="glass">
+              <CardContent className="pt-6">
+                <div className="h-16 animate-pulse rounded bg-muted"></div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !dashboardData) {
+    return (
+      <div className="flex flex-col gap-6">
+        <PageHeader
+          title="Platform overview"
+          subtitle="Error loading dashboard"
+        />
+        <Card className="glass">
+          <CardContent className="pt-6">
+            <p className="text-muted-foreground">
+              {error || 'Unable to load dashboard data. Please try again later.'}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Transform data for display
+  const kpis = transformSummaryToKpis(dashboardData);
+  const growthData = generateGrowthData(dashboardData.recent_orders);
+  const regionData = getRegionData();
+  const topFirmas = getTopFirmas(dashboardData.recent_orders);
+  const systemHealth = getSystemHealth();
+  
+  // Calculate total GMV (if not provided, sum from orders)
+  const totalGMV = dashboardData.summary.revenue_total || 
+    dashboardData.recent_orders.reduce((sum, order) => sum + order.total_price, 0);
+
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
@@ -76,12 +151,42 @@ export function AdminDashboard() {
       />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
-        <KpiCard label="Total suppliers" value={formatNumber(1574)} change={8.4} icon={Factory} />
-        <KpiCard label="Total stores" value={formatNumber(6640)} change={11.2} icon={Store} />
-        <KpiCard label="Total products" value={formatNumber(284000, true)} change={6.1} icon={Package} />
-        <KpiCard label="Total orders" value={formatNumber(1290000, true)} change={15.7} icon={ShoppingCart} />
-        <KpiCard label="Marketplace GMV" value={formatCurrency(72000000, true)} change={19.3} icon={DollarSign} />
-        <KpiCard label="Active deliveries" value={formatNumber(8412)} change={3.5} icon={Truck} />
+        <KpiCard 
+          label="Total suppliers" 
+          value={formatNumber(kpis.totalSuppliers)} 
+          change={8.4} 
+          icon={Factory} 
+        />
+        <KpiCard 
+          label="Total stores" 
+          value={formatNumber(kpis.totalStores)} 
+          change={11.2} 
+          icon={Store} 
+        />
+        <KpiCard 
+          label="Total products" 
+          value={formatNumber(kpis.totalProducts, true)} 
+          change={6.1} 
+          icon={Package} 
+        />
+        <KpiCard 
+          label="Total orders" 
+          value={formatNumber(kpis.totalOrders, true)} 
+          change={15.7} 
+          icon={ShoppingCart} 
+        />
+        <KpiCard 
+          label="Marketplace GMV" 
+          value={formatCurrency(kpis.totalRevenue, true)} 
+          change={19.3} 
+          icon={DollarSign} 
+        />
+        <KpiCard 
+          label="Pending orders" 
+          value={formatNumber(kpis.pendingOrders)} 
+          change={3.5} 
+          icon={Truck} 
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
@@ -92,7 +197,7 @@ export function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <ChartContainer config={growthConfig} className="h-[280px] w-full">
-              <AreaChart data={adminGrowth} margin={{ left: 4, right: 8, top: 8 }}>
+              <AreaChart data={growthData} margin={{ left: 4, right: 8, top: 8 }}>
                 <defs>
                   <linearGradient id="fillSuppliers" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="var(--color-suppliers)" stopOpacity={0.4} />
@@ -107,8 +212,20 @@ export function AdminDashboard() {
                 <XAxis dataKey="month" tickLine={false} axisLine={false} tickMargin={10} className="text-xs" />
                 <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
                 <ChartLegend content={<ChartLegendContent />} />
-                <Area dataKey="stores" type="monotone" fill="url(#fillStores)" stroke="var(--color-stores)" strokeWidth={2} />
-                <Area dataKey="suppliers" type="monotone" fill="url(#fillSuppliers)" stroke="var(--color-suppliers)" strokeWidth={2} />
+                <Area 
+                  dataKey="stores" 
+                  type="monotone" 
+                  fill="url(#fillStores)" 
+                  stroke="var(--color-stores)" 
+                  strokeWidth={2} 
+                />
+                <Area 
+                  dataKey="suppliers" 
+                  type="monotone" 
+                  fill="url(#fillSuppliers)" 
+                  stroke="var(--color-suppliers)" 
+                  strokeWidth={2} 
+                />
               </AreaChart>
             </ChartContainer>
           </CardContent>
@@ -123,8 +240,15 @@ export function AdminDashboard() {
             <ChartContainer config={regionConfig} className="mx-auto aspect-square h-[200px]">
               <PieChart>
                 <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-                <Pie data={adminRegions} dataKey="value" nameKey="region" innerRadius={58} strokeWidth={4} stroke="var(--card)">
-                  {adminRegions.map((entry) => (
+                <Pie 
+                  data={regionData} 
+                  dataKey="value" 
+                  nameKey="region" 
+                  innerRadius={58} 
+                  strokeWidth={4} 
+                  stroke="var(--card)"
+                >
+                  {regionData.map((entry) => (
                     <Cell key={entry.region} fill={entry.fill} />
                   ))}
                   <Label
@@ -133,13 +257,13 @@ export function AdminDashboard() {
                         return (
                           <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
                             <tspan x={viewBox.cx} y={viewBox.cy} className="fill-foreground text-2xl font-semibold">
-                              $72M
+                              {formatCurrency(totalGMV, true)}
                             </tspan>
                             <tspan x={viewBox.cx} y={(viewBox.cy ?? 0) + 20} className="fill-muted-foreground text-xs">
                               total GMV
-                            </tspan>  
+                            </tspan>
                           </text>
-                        )
+                        );
                       }
                     }}
                   />
@@ -147,7 +271,7 @@ export function AdminDashboard() {
               </PieChart>
             </ChartContainer>
             <div className="mt-2 flex flex-col gap-2">
-              {adminRegions.map((r) => (
+              {regionData.map((r) => (
                 <div key={r.region} className="flex items-center justify-between text-sm">
                   <span className="flex items-center gap-2 text-muted-foreground">
                     <span className="size-2.5 rounded-full" style={{ background: r.fill }} />
@@ -178,19 +302,33 @@ export function AdminDashboard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {adminTopFirmas.map((s) => (
-                  <TableRow key={s.name}>
-                    <TableCell className="font-medium">{s.name}</TableCell>
-                    <TableCell className="text-right tabular-nums">{formatCurrency(s.gmv, true)}</TableCell>
-                    <TableCell className="text-right tabular-nums text-muted-foreground">{s.stores}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Progress value={s.health} className="h-1.5" />
-                        <span className="w-9 text-right text-xs tabular-nums text-muted-foreground">{s.health}%</span>
-                      </div>
+                {topFirmas.length > 0 ? (
+                  topFirmas.map((s) => (
+                    <TableRow key={s.name}>
+                      <TableCell className="font-medium">{s.name}</TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {formatCurrency(s.gmv, true)}
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums text-muted-foreground">
+                        {s.stores}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Progress value={s.health} className="h-1.5" />
+                          <span className="w-9 text-right text-xs tabular-nums text-muted-foreground">
+                            {s.health}%
+                          </span>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center text-muted-foreground">
+                      No firmas data available
                     </TableCell>
                   </TableRow>
-                ))}
+                )}
               </TableBody>
             </Table>
           </CardContent>
@@ -207,11 +345,16 @@ export function AdminDashboard() {
             </span>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
-            {adminSystemHealth.map((s) => (
-              <div key={s.service} className="flex items-center justify-between rounded-lg border border-border/50 bg-secondary/30 px-3 py-2.5">
+            {systemHealth.map((s) => (
+              <div 
+                key={s.service} 
+                className="flex items-center justify-between rounded-lg border border-border/50 bg-secondary/30 px-3 py-2.5"
+              >
                 <div className="flex flex-col">
                   <span className="text-sm font-medium">{s.service}</span>
-                  <span className="text-xs text-muted-foreground">{s.uptime}% uptime · {s.latency}ms</span>
+                  <span className="text-xs text-muted-foreground">
+                    {s.uptime}% uptime · {s.latency}ms
+                  </span>
                 </div>
                 <StatusBadge status={s.status} />
               </div>
@@ -219,6 +362,46 @@ export function AdminDashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Optional: Recent Orders Section */}
+      {dashboardData.recent_orders.length > 0 && (
+        <Card className="glass">
+          <CardHeader>
+            <CardTitle>Recent Orders</CardTitle>
+            <CardDescription>Latest orders from the marketplace</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow className="hover:bg-transparent">
+                  <TableHead>Order #</TableHead>
+                  <TableHead>Supplier</TableHead>
+                  <TableHead>Product</TableHead>
+                  <TableHead className="text-right">Amount</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {dashboardData.recent_orders.slice(0, 5).map((order) => (
+                  <TableRow key={order.id}>
+                    <TableCell className="font-mono text-xs">
+                      {order.order_number}
+                    </TableCell>
+                    <TableCell>{order.firma_name}</TableCell>
+                    <TableCell>{order.product_name}</TableCell>
+                    <TableCell className="text-right tabular-nums">
+                      {formatCurrency(order.total_price)}
+                    </TableCell>
+                    <TableCell>
+                      <StatusBadge status={order.status} />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
     </div>
-  )
+  );
 }

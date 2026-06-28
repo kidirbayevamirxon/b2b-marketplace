@@ -68,7 +68,7 @@ export const navByRole: Record<Role, NavGroup[]> = {
         href: "/dashboard/purchases",
       },
       {
-        label: "Suppliers",
+        label: "Goods",
         icon: Factory,
         href: "/dashboard/suppliers",
       },
@@ -88,7 +88,7 @@ export const navByRole: Record<Role, NavGroup[]> = {
       {
         label: "Suppliers",
         icon: Factory,
-        href: "/dashboard/suppliers",
+        href: "/dashboard/firmas",
       },
       {
         label: "Stores",
@@ -98,7 +98,7 @@ export const navByRole: Record<Role, NavGroup[]> = {
       {
         label: "Products",
         icon: Package,
-        href: "/dashboard/products",
+        href: "/dashboard/productTypes",
       },
     ],
   },
