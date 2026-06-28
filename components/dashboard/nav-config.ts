@@ -66,7 +66,6 @@ export const navByRole: Record<Role, NavGroup[]> = {
         label: "Purchases",
         icon: ShoppingCart,
         href: "/dashboard/purchases",
-        badge: "5",
       },
       {
         label: "Suppliers",
