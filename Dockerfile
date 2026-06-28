@@ -11,6 +11,9 @@ RUN npm ci
 FROM node:20-alpine AS builder
 WORKDIR /app
 
+ARG NEXT_PUBLIC_API_URL=http://mchs.techsoftx.uz:8011
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+
 # Copy dependencies from the previous stage
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -37,7 +40,6 @@ USER nextjs
 EXPOSE 3000
 
 ENV PORT=3000
-ENV NEXT_PUBLIC_API_URL=http://mchs.techsoftx.uz:8011
 ENV HOSTNAME="0.0.0.0"
 
 CMD ["node", "server.js"]
