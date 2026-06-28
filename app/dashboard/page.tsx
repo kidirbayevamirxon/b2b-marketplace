@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { api } from "@/api/api";
 import { SupplierDashboard } from "@/components/dashboard/supplier-dashboard";
 import { StoreDashboard } from "@/components/dashboard/store-dashboard";
 import { AdminDashboard } from "@/components/dashboard/admin-dashboard";
+import { api } from "@/api/api";
 
 interface DashboardData {
   role: string;
@@ -33,20 +33,21 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchDashboardData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+ const fetchDashboardData = async () => {
+  try {
+    setLoading(true);
+    setError(null);
 
-      const { data } = await api.get("/analytics/dashboard");
-      setDashboardData(data);
-    } catch (err) {
-      console.error("Error fetching dashboard data:", err);
-      setError(err instanceof Error ? err.message : "An error occurred");
-    } finally {
-      setLoading(false);
-    }
-  };
+    const { data } = await api.get<DashboardData>("/analytics/dashboard");
+
+    setDashboardData(data);
+  } catch (err: any) {
+    console.error("Error fetching dashboard data:", err);
+    setError(err.response?.data?.message || err.message || "An error occurred");
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     const storedRole = localStorage.getItem("role");

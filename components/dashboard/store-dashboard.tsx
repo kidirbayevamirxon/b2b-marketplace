@@ -227,7 +227,7 @@ export function StoreDashboard({ data }: StoreDashboardProps) {
                     <TableRow key={order.id || order.order_id}>
                       <TableCell className="font-medium">{order.id || order.order_id || 'N/A'}</TableCell>
                       <TableCell className="text-muted-foreground">
-                        {order.supplier_name || order.supplier || 'Unknown'}
+                        {order.supplier_name || order.firma_name || 'Unknown'}
                       </TableCell>
                       <TableCell className="text-right tabular-nums">
                         {formatCurrency(order.total || order.amount || 0)}
